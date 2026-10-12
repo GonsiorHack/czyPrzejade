@@ -1,0 +1,16 @@
+services:
+  valhalla:
+    image: ghcr.io/gis-ops/docker-valhalla/valhalla:latest
+    container_name: valhalla_krakow
+    restart: unless-stopped
+    ports:
+      - "8002:8002"
+    volumes:
+      - ./valhalla_tiles:/custom_files
+    environment:
+      - tile_urls=https://download.geofabrik.de/europe/poland/malopolskie-latest.osm.pbf
+      - build_elevation=False
+      - build_admins=False
+      - build_transit=False
+      - server_threads=2
+      - force_rebuild=False
