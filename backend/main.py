@@ -4,11 +4,14 @@ from pathlib import Path
 from typing import List, Dict, Any
 from pathlib import Path
 
+import polyline
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 
-app = FastAPI(title="WheelRoute - Krakow Accessibility API")
+app = FastAPI()
+
+VALHALLA_URL = "http://localhost:8002/route"
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,6 +28,154 @@ ANALYZED_DATA_DIR = Path("../machinelearning/analyzed_data")
 COMBINED_FILE = ANALYZED_DATA_DIR / "all_zones.geojson"
 
 FORBIDDEN_DATA_DIR = Path("forbidden_zones")
+
+@app.get("/api/valhalla/route-standard")
+def get_standard_route(start_lng: float, start_lat: float, end_lng: float, end_lat: float):
+    c_start_lng, c_start_lat = (
+        (start_lat, start_lng) if start_lng > start_lat else (start_lng, start_lat)
+    )
+    c_end_lng, c_end_lat = (
+        (end_lat, end_lng) if end_lng > end_lat else (end_lng, end_lat)
+    )
+
+    payload = {
+        "locations": [
+            {"lat": c_start_lat, "lon": c_start_lng, "type": "break"},
+            {"lat": c_end_lat, "lon": c_end_lng, "type": "break"},
+        ],
+        "costing": "pedestrian",
+    }
+
+    try:
+        response = requests.post(VALHALLA_URL, json=payload, timeout=5)
+    except requests.exceptions.ConnectionError:
+        raise HTTPException(
+            status_code=503,
+            detail="Valhalla is offline.",
+        )
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail=response.text)
+
+    data = response.json()
+    trip = data["trip"]
+    summary = trip["summary"]
+
+    decoded_points = polyline.decode(trip["legs"][0]["shape"], precision=6)
+    geojson_coords = [[lon, lat] for lat, lon in decoded_points]
+
+    return {
+        "type": "Feature",
+        "properties": {
+            "route_type": "standard_pedestrian",
+            "distance_m": round(
+                summary["length"] * 1000, 1
+            ),
+            "time_minutes": round(summary["time"] / 60, 1),
+        },
+        "geometry": {"type": "LineString", "coordinates": geojson_coords},
+    }
+
+def format_polygons_for_valhalla(features: List[Dict[str, Any]]) -> List[List[List[float]]]:
+    avoid_polygons = []
+    if not features:
+        return avoid_polygons
+
+    for feat in features:
+        geom = feat.get("geometry", {})
+        gtype = geom.get("type")
+        coords = geom.get("coordinates", [])
+
+        if gtype == "Polygon" and coords:
+            avoid_polygons.append(coords[0])
+        elif gtype == "MultiPolygon":
+            for poly in coords:
+                if poly:
+                    avoid_polygons.append(poly[0])
+
+    return avoid_polygons
+
+
+@app.get("/api/valhalla/route")
+def get_safe_wheelchair_route(start_lng: float, start_lat: float, end_lng: float, end_lat: float):
+    c_start_lng, c_start_lat = (
+        (start_lat, start_lng) if start_lng > start_lat else (start_lng, start_lat)
+    )
+    c_end_lng, c_end_lat = (
+        (end_lat, end_lng) if end_lng > end_lat else (end_lng, end_lat)
+    )
+
+    ml_features = get_ml_avoid_features()
+    forbidden_features = load_strictly_forbidden_polygons()
+    all_avoid_features = ml_features + forbidden_features
+
+    payload = {
+        "locations": [
+            {"lat": c_start_lat, "lon": c_start_lng, "type": "break"},
+            {"lat": c_end_lat, "lon": c_end_lng, "type": "break"}
+        ],
+        "costing": "pedestrian",
+        "costing_options": {
+            "pedestrian": {
+                "wheelchair": True,
+
+                "walkway_factor": 0.3,
+                "sidewalk_factor": 0.5,
+
+                "alley_factor": 3.0,
+                "driveway_factor": 5.0,
+
+                "use_roads": 0.1,
+                "use_tracks": 0.0,
+                "use_hills": 0.1,
+                "use_living_streets": 0.8,
+
+                "step_penalty": 10000.0,
+                "max_up_slope": 6.0,
+                "max_down_slope": 6.0
+            }
+        }
+    }
+
+    avoid_polygons = format_polygons_for_valhalla(all_avoid_features)
+    if avoid_polygons:
+        payload["avoid_polygons"] = avoid_polygons
+
+    try:
+        response = requests.post(VALHALLA_URL, json=payload, timeout=5)
+    except requests.exceptions.ConnectionError:
+        raise HTTPException(
+            status_code=503,
+            detail="Valhalla is offline. Upewnij się, że kontener działa.",
+        )
+
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=response.status_code,
+            detail=f"Valhalla error (Safe Route): {response.text}"
+        )
+
+    data = response.json()
+    trip = data["trip"]
+    summary = trip["summary"]
+
+    decoded_points = polyline.decode(trip["legs"][0]["shape"], precision=6)
+    geojson_coords = [[lon, lat] for lat, lon in decoded_points]
+
+    return {
+        "type": "Feature",
+        "properties": {
+            "route_type": "wheelchair_safe",
+            "distance_m": round(summary["length"] * 1000, 1),
+            "time_minutes": round(summary["time"] / 60, 1),
+            "is_wheelchair_safe": True,
+            "info": "Safe route: avoids architectural barriers (ML) and closed zones",
+        },
+        "geometry": {
+            "type": "LineString",
+            "coordinates": geojson_coords
+        },
+    }
 
 
 def load_all_analyzed_zones() -> Dict[str, Any]:
@@ -214,3 +365,7 @@ def get_safe_wheelchair_route(start_lng: float, start_lat: float, end_lng: float
         },
         "geometry": feature["geometry"]
     }
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
