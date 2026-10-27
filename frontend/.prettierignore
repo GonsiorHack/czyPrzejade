@@ -1,8 +1,0 @@
-node_modules/
-.svelte-kit/
-build/
-.output/
-.vercel/
-.netlify/
-.wrangler/
-package-lock.json
