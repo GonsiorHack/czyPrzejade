@@ -17,6 +17,13 @@ class LocationException implements Exception {
   String toString() => 'LocationException($failure)';
 }
 
+/// Pozycja GPS z kierunkiem ruchu ([heading] w stopniach od północy, null gdy nieznany).
+class GpsFix {
+  const GpsFix(this.point, this.heading);
+  final LatLng point;
+  final double? heading;
+}
+
 /// Cienka warstwa nad `geolocator`: uprawnienia, pozycja jednorazowa i strumień GPS.
 class LocationService {
   /// Pobiera bieżącą pozycję; rzuca [LocationException] przy braku zgody lub sygnału.
@@ -36,14 +43,14 @@ class LocationService {
   }
 
   /// Strumień pozycji na czas nawigacji; uprawnienia są sprawdzane przed startem.
-  Future<Stream<LatLng>> track() async {
+  Future<Stream<GpsFix>> track() async {
     await _ensurePermission();
     return Geolocator.getPositionStream(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
         distanceFilter: MapConstants.gpsDistanceFilterMeters,
       ),
-    ).map((p) => LatLng(p.latitude, p.longitude));
+    ).map((p) => GpsFix(LatLng(p.latitude, p.longitude), p.heading >= 0 ? p.heading : null));
   }
 
   Future<void> _ensurePermission() async {

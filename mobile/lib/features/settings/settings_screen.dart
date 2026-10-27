@@ -4,11 +4,13 @@ import 'package:provider/provider.dart';
 import '../../app/design_tokens.dart';
 import '../../core/settings.dart';
 import 'settings_strings.dart';
+import 'widgets/city_picker_sheet.dart';
+import 'widgets/profile_header.dart';
 import 'widgets/settings_group.dart';
 
 const _labelStyle = TextStyle(fontWeight: FontWeight.w600);
 
-/// Zakładka "Ustawienia": motyw, dostępność, profil mobilności i powiadomienia.
+/// Strona "Ustawienia": motyw, dostępność, profil mobilności i powiadomienia.
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -17,26 +19,56 @@ class SettingsScreen extends StatelessWidget {
     final settings = context.watch<AppSettings>();
     final theme = Theme.of(context);
 
-    return ListView(
-      padding: const EdgeInsets.all(Spacing.lg),
+    return Scaffold(
+      appBar: AppBar(title: const Text(SettingsStrings.title)),
+      body: ListView(
+        padding: EdgeInsets.fromLTRB(
+          Spacing.lg,
+          Spacing.lg,
+          Spacing.lg,
+          Spacing.lg + MediaQuery.paddingOf(context).bottom,
+        ),
+        children: [
+          const ProfileHeader(),
+          const SizedBox(height: Spacing.lg),
+          Text(
+            SettingsStrings.subtitle,
+            style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+          ),
+          const SizedBox(height: Spacing.lg),
+          _LocationGroup(settings: settings),
+          const SizedBox(height: Spacing.lg),
+          _AppearanceGroup(settings: settings),
+          const SizedBox(height: Spacing.lg),
+          _AccessibilityGroup(settings: settings),
+          const SizedBox(height: Spacing.lg),
+          _MobilityGroup(settings: settings),
+          const SizedBox(height: Spacing.lg),
+          _NotificationsGroup(settings: settings),
+        ],
+      ),
+    );
+  }
+}
+
+class _LocationGroup extends StatelessWidget {
+  const _LocationGroup({required this.settings});
+  final AppSettings settings;
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsGroup(
+      title: SettingsStrings.location,
       children: [
-        Text(
-          SettingsStrings.title,
-          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.location_city_outlined),
+          title: const Text(SettingsStrings.defaultCity, style: _labelStyle),
+          subtitle: Text(settings.city.name),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () =>
+              showCityPicker(context, selected: settings.city, onSelected: settings.setCity),
         ),
-        const SizedBox(height: Spacing.xs),
-        Text(
-          SettingsStrings.subtitle,
-          style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
-        ),
-        const SizedBox(height: Spacing.lg),
-        _AppearanceGroup(settings: settings),
-        const SizedBox(height: Spacing.lg),
-        _AccessibilityGroup(settings: settings),
-        const SizedBox(height: Spacing.lg),
-        _MobilityGroup(settings: settings),
-        const SizedBox(height: Spacing.lg),
-        _NotificationsGroup(settings: settings),
       ],
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../app/design_tokens.dart';
 import '../../../app/theme.dart';
+import '../../../core/widgets/sheet_surface.dart';
 import '../map_strings.dart';
 import '../models/route_info.dart';
 import '../utils/formatters.dart';
@@ -39,9 +40,9 @@ class _RouteSheetState extends State<RouteSheet> {
   bool _expanded = false;
 
   RouteInfo get _active => widget.routes.firstWhere(
-        (r) => r.id == widget.activeRouteId,
-        orElse: () => widget.routes.first,
-      );
+    (r) => r.id == widget.activeRouteId,
+    orElse: () => widget.routes.first,
+  );
 
   void _onDragEnd(DragEndDetails details) {
     final velocity = details.primaryVelocity ?? 0;
@@ -52,22 +53,13 @@ class _RouteSheetState extends State<RouteSheet> {
   @override
   Widget build(BuildContext context) {
     if (widget.routes.isEmpty) return const SizedBox.shrink();
-    final scheme = Theme.of(context).colorScheme;
     final active = _active;
     final alternatives = widget.routes.where((r) => r.id != active.id).toList();
     final hasAlternative = alternatives.isNotEmpty;
 
     return GestureDetector(
       onVerticalDragEnd: hasAlternative ? _onDragEnd : null,
-      child: Container(
-        decoration: BoxDecoration(
-          color: scheme.surface,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(Radii.lg)),
-          border: Border.all(color: scheme.outline.withValues(alpha: 0.6)),
-          boxShadow: const [
-            BoxShadow(color: AppShadows.overlay, blurRadius: 24, offset: Offset(0, -4)),
-          ],
-        ),
+      child: SheetSurface(
         child: SafeArea(
           top: false,
           child: Padding(
@@ -184,11 +176,12 @@ class _RouteSummary extends StatelessWidget {
           ],
         ),
         const SizedBox(height: Spacing.xs),
-        Text(formatDistance(route.distanceMeters), style: TextStyle(color: scheme.onSurfaceVariant)),
-        if (route.offline)
-          _Note(text: MapStrings.offlineRouteNote, color: colors.caution),
-        if (identical)
-          _Note(text: MapStrings.identicalRoutesNote, color: scheme.onSurfaceVariant),
+        Text(
+          formatDistance(route.distanceMeters),
+          style: TextStyle(color: scheme.onSurfaceVariant),
+        ),
+        if (route.offline) _Note(text: MapStrings.offlineRouteNote, color: colors.caution),
+        if (identical) _Note(text: MapStrings.identicalRoutesNote, color: scheme.onSurfaceVariant),
       ],
     );
   }
@@ -201,7 +194,7 @@ class _Note extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: Spacing.xs),
-        child: Text(text, style: TextStyle(color: color, fontSize: 12)),
-      );
+    padding: const EdgeInsets.only(top: Spacing.xs),
+    child: Text(text, style: TextStyle(color: color, fontSize: 12)),
+  );
 }

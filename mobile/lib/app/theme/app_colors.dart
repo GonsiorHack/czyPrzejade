@@ -16,6 +16,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.successBg,
     required this.caution,
     required this.cautionBg,
+    required this.ratingStar,
     required this.scrim,
     required this.activeRouteWidth,
     required this.inactiveRouteWidth,
@@ -44,6 +45,7 @@ class AppColors extends ThemeExtension<AppColors> {
       cautionBg: dark
           ? const Color(0xFF451A03)
           : (highContrast ? Colors.white : const Color(0xFFFEF3C7)),
+      ratingStar: highContrast ? const Color(0xFFB45309) : const Color(0xFFF59E0B),
       scrim: dark ? const Color(0xA6000000) : const Color(0x800F172A),
       activeRouteWidth: highContrast ? 7 : 6,
       inactiveRouteWidth: highContrast ? 6 : 5,
@@ -62,6 +64,7 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color successBg;
   final Color caution;
   final Color cautionBg;
+  final Color ratingStar;
   final Color scrim;
   final double activeRouteWidth;
   final double inactiveRouteWidth;

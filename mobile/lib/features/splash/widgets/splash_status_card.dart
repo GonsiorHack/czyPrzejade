@@ -17,7 +17,10 @@ class SplashStatusCard extends StatelessWidget {
         color: scheme.surface.withValues(alpha: 0.95),
         borderRadius: BorderRadius.circular(10),
       ),
-      child: DefaultTextStyle.merge(style: TextStyle(color: scheme.onSurface), child: child),
+      child: DefaultTextStyle.merge(
+        style: TextStyle(color: scheme.onSurface),
+        child: child,
+      ),
     );
   }
 }

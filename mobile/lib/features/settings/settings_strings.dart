@@ -19,4 +19,15 @@ abstract final class SettingsStrings {
   static const transitAlerts = 'Wizualne alerty komunikacji';
   static const transitAlertsHint = 'Zapisz preferencję ostrzeżeń o utrudnieniach w MPK.';
   static const transitAlertsNote = 'Alerty MPK będą dostępne po podłączeniu źródła danych.';
+
+  static const profileName = 'Jan Kowalski';
+  static const profileTitle = 'Twój Profil';
+  static const profileStatus = 'Konto lokalne';
+  static const profileAvatar = 'Awatar profilu';
+
+  static const location = 'Lokalizacja';
+  static const defaultCity = 'Domyślne miasto';
+  static const cityPickerTitle = 'Wybierz miasto';
+  static const citySearchHint = 'Szukaj miasta';
+  static const cityNoResults = 'Nie znaleziono miasta.';
 }

@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import '../../../app/design_tokens.dart';
 import '../map_strings.dart';
 import 'map_control_button.dart';
+import 'report_obstacle_button.dart';
 
-/// Kolumna przycisków przy prawej krawędzi: zoom +/- oraz lokalizacja.
+/// Kolumna przycisków przy prawej krawędzi: aparat (zgłoszenie), zoom +/- i lokalizacja.
 class MapControls extends StatelessWidget {
   const MapControls({
     super.key,
@@ -25,6 +26,7 @@ class MapControls extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       spacing: Spacing.sm,
       children: [
+        const ReportObstacleButton(),
         MapControlButton(icon: Icons.add, tooltip: MapStrings.zoomIn, onPressed: onZoomIn),
         MapControlButton(icon: Icons.remove, tooltip: MapStrings.zoomOut, onPressed: onZoomOut),
         MapControlButton(

@@ -17,12 +17,7 @@ class ShowMessage extends MapEffect {
 /// [keepHigherZoom] nie pozwala zmniejszyć obecnego zoomu,
 /// a [animated] = false wykonuje skok bez animacji (np. śledzenie GPS).
 class MoveCamera extends MapEffect {
-  const MoveCamera(
-    this.target, {
-    this.zoom,
-    this.keepHigherZoom = false,
-    this.animated = true,
-  });
+  const MoveCamera(this.target, {this.zoom, this.keepHigherZoom = false, this.animated = true});
   final LatLng target;
   final double? zoom;
   final bool keepHigherZoom;
@@ -32,4 +27,10 @@ class MoveCamera extends MapEffect {
 /// Dopasowanie kamery do wszystkich wyznaczonych tras.
 class FitRoutes extends MapEffect {
   const FitRoutes();
+}
+
+/// Obrót mapy tak, by [degrees] (kierunek ruchu, 0 = północ) wskazywał górę ekranu.
+class RotateCamera extends MapEffect {
+  const RotateCamera(this.degrees);
+  final double degrees;
 }

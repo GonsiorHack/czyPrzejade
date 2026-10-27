@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
 
+import 'accessibility_grade.dart';
+
 enum FacilityCategory {
   museums('Muzea', Icons.museum_outlined),
   sport('Sport', Icons.sports_basketball_outlined),
-  monuments('Zabytki', Icons.account_balance_outlined);
+  monuments('Zabytki', Icons.account_balance_outlined),
+  food('Gastronomia', Icons.local_cafe_outlined);
 
   const FacilityCategory(this.label, this.icon);
   final String label;
@@ -49,6 +52,17 @@ class AccessibilityDetails {
   final String? equipmentRental;
   final String? digitalAccess;
   final String? notes;
+
+  /// Liczba udokumentowanych sekcji dostępności (bez uwag).
+  int get documentedCount => [
+    parking,
+    entrance,
+    verticalTransport,
+    cloakroom,
+    restrooms,
+    equipmentRental,
+    digitalAccess,
+  ].whereType<String>().length;
 }
 
 class Facility {
@@ -63,6 +77,10 @@ class Facility {
     required this.badges,
     required this.details,
     required this.coordinates,
+    required this.rating,
+    required this.ratingCount,
+    this.photoUrl,
+    this.sponsored = false,
   });
   final String id;
   final String name;
@@ -74,5 +92,25 @@ class Facility {
   final List<FacilityBadge> badges;
   final AccessibilityDetails details;
   final LatLng coordinates;
-}
 
+  /// Ocena użytkowników (1-5) i liczba ocen. Dane demonstracyjne do czasu podpięcia backendu.
+  final double rating;
+  final int ratingCount;
+
+  /// Miniatura obiektu; gdy brak lub nie da się pobrać, pokazywany jest zastępnik z ikoną.
+  final String? photoUrl;
+
+  /// Czy obiekt jest promowany (karta "Sponsorowane" na górze listy).
+  final bool sponsored;
+
+  /// Wynik dostępności 0-100: weryfikacja (40/20) + udogodnienia (do 40) + udokumentowane sekcje (do 20).
+  int get accessibilityScore {
+    final verification = verified ? 40 : 20;
+    final amenities = badges.length.clamp(0, 4) * 10;
+    final documented = details.documentedCount.clamp(0, 5) * 4;
+    return verification + amenities + documented;
+  }
+
+  /// Ocena A-F pokazywana w interfejsie zamiast wyniku liczbowego.
+  AccessibilityGrade get accessibilityGrade => AccessibilityGrade.fromScore(accessibilityScore);
+}

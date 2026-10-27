@@ -20,17 +20,17 @@ abstract final class MapStrings {
 
   // Podpowiedzi nad mapą
   static const hintRouting = 'Wyznaczanie optymalnej trasy…';
-  static const hintPickStart = 'Dotknij mapy, aby wybrać punkt startowy.';
   static const hintStartOnly = 'Wybierz punkt startowy.';
   static const hintPickDestination = 'Teraz wybierz cel podróży.';
   static String hintNavigating(String duration) => 'Nawigacja: $duration do celu.';
 
   // Panel planowania trasy
-  static const fromHint = 'Skąd? (adres lub mapa)';
-  static const toHint = 'Dokąd? (adres lub mapa)';
-  static const useMyLocation = 'Użyj mojej lokalizacji';
-  static const clearRoute = 'Wyczyść trasę';
-  static const search = 'Szukaj';
+  static const fromHint = 'Skąd?';
+  static const toHint = 'Dokąd?';
+  static const voiceStart = 'Wyszukiwanie głosowe';
+  static const voiceStop = 'Zatrzymaj nasłuchiwanie';
+  static const voiceUnavailable = 'Rozpoznawanie mowy jest niedostępne na tym urządzeniu.';
+  static const clearField = 'Wyczyść pole';
 
   // Sterowanie mapą
   static const zoomIn = 'Przybliż';

@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'cities.dart';
 import 'settings_options.dart';
 
+export 'cities.dart';
 export 'settings_options.dart';
 
 /// Preferencje użytkownika zapisywane lokalnie (`shared_preferences`).
@@ -17,12 +19,14 @@ class AppSettings extends ChangeNotifier {
   TextSizeOption _textSize = TextSizeOption.standard;
   MobilityProfile _mobilityProfile = MobilityProfile.manualWheelchair;
   bool _visualTransitAlerts = true;
+  PolishCity _city = defaultCity;
 
   AppTheme get theme => _theme;
   bool get highContrast => _highContrast;
   TextSizeOption get textSize => _textSize;
   MobilityProfile get mobilityProfile => _mobilityProfile;
   bool get visualTransitAlerts => _visualTransitAlerts;
+  PolishCity get city => _city;
 
   /// Wczytuje zapisane ustawienia; uszkodzone dane są ignorowane.
   Future<void> restore() async {
@@ -36,6 +40,7 @@ class AppSettings extends ChangeNotifier {
       _textSize = TextSizeOption.values.asNameMap()[data['textSize']] ?? _textSize;
       _mobilityProfile =
           MobilityProfile.values.asNameMap()[data['mobilityProfile']] ?? _mobilityProfile;
+      _city = cityByName(data['city'] as String?);
       if (data['highContrast'] is bool) _highContrast = data['highContrast'] as bool;
       if (data['visualTransitAlerts'] is bool) {
         _visualTransitAlerts = data['visualTransitAlerts'] as bool;
@@ -50,6 +55,7 @@ class AppSettings extends ChangeNotifier {
   void setHighContrast(bool value) => _update(() => _highContrast = value);
   void setTextSize(TextSizeOption value) => _update(() => _textSize = value);
   void setMobilityProfile(MobilityProfile value) => _update(() => _mobilityProfile = value);
+  void setCity(PolishCity value) => _update(() => _city = value);
   void setVisualTransitAlerts(bool value) => _update(() => _visualTransitAlerts = value);
 
   void _update(VoidCallback change) {
@@ -68,6 +74,7 @@ class AppSettings extends ChangeNotifier {
         'textSize': _textSize.name,
         'mobilityProfile': _mobilityProfile.name,
         'visualTransitAlerts': _visualTransitAlerts,
+        'city': _city.name,
       }),
     );
   }

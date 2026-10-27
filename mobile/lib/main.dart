@@ -46,7 +46,8 @@ class _CzyPrzejadeAppState extends State<CzyPrzejadeApp> {
       theme: AppThemeFactory.build(settings.theme, highContrast: settings.highContrast),
       // Globalna skala tekstu z ustawień dostępności.
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(settings.textSize.scale)),
+        data: MediaQuery.of(context)
+            .copyWith(textScaler: TextScaler.linear(settings.textSize.scale)),
         child: child!,
       ),
       home: Stack(

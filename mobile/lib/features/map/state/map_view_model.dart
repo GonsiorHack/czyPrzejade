@@ -24,8 +24,8 @@ enum _AssignResult { rejected, routing, placed }
 /// Widok reaguje na zmiany stanu (`notifyListeners`) oraz na zdarzenia [effects].
 class MapViewModel extends ChangeNotifier {
   MapViewModel({required MapApi api, required LocationService location})
-      : _api = api,
-        _location = location;
+    : _api = api,
+      _location = location;
 
   final MapApi _api;
   final LocationService _location;
@@ -44,8 +44,20 @@ class MapViewModel extends ChangeNotifier {
   bool _loading = false;
   bool _locating = false;
   bool _disposed = false;
+
+  /// GPS niedostępny, odmówiony lub poza Krakowem: trzeba pokazać pole "Skąd".
+  bool _gpsFailed = false;
+
+  /// Użytkownik sam rozwinął pole "Skąd".
+  Future<LatLng?>? _pendingLocate;
   LatLng? _userLocation;
-  StreamSubscription<LatLng>? _positionSub;
+  StreamSubscription<GpsFix>? _positionSub;
+
+  /// Kierunek ruchu w stopniach od północy (null poza nawigacją).
+  double? _heading;
+
+  static const _minHeadingMeters = 10.0;
+  static const _minMoveMeters = 3.0;
 
   /// Numer ostatniego zapytania; odpowiedzi ze starszych zapytań są ignorowane.
   int _requestId = 0;
@@ -60,6 +72,10 @@ class MapViewModel extends ChangeNotifier {
   bool get loading => _loading;
   bool get locating => _locating;
   LatLng? get userLocation => _userLocation;
+  double? get heading => _heading;
+
+  /// Pole "Skąd" pojawia się dopiero po wybraniu celu ("Dokąd").
+  bool get showOrigin => _destination != null;
 
   /// Aktywna trasa; gdy nic nie wybrano, pierwsza z listy.
   RouteInfo? get activeRoute {
@@ -72,7 +88,7 @@ class MapViewModel extends ChangeNotifier {
   /// Podpowiedź wyświetlana nad mapą (pusta, gdy nie jest potrzebna).
   String get hint {
     if (_loading) return MapStrings.hintRouting;
-    if (_start == null && _destination == null) return MapStrings.hintPickStart;
+    if (_start == null && _destination == null) return '';
     if (_start == null) return MapStrings.hintStartOnly;
     if (_destination == null) return MapStrings.hintPickDestination;
     final active = activeRoute;
@@ -84,14 +100,14 @@ class MapViewModel extends ChangeNotifier {
 
   // ------------------------------------------------------------ punkty trasy
 
-  /// Dotknięcie mapy ustawia najpierw punkt A, potem B.
+  /// Dotknięcie mapy ustawia najpierw cel (B); start (A) pochodzi z GPS lub z pola "Skąd".
   void onMapTap(LatLng point) {
     if (_loading) return;
     final waypoint = Waypoint(point, MapStrings.mapPointLabel);
-    if (_start == null) {
-      _assign(WaypointKind.start, waypoint);
-    } else if (_destination == null) {
+    if (_destination == null) {
       _assign(WaypointKind.destination, waypoint);
+    } else if (_start == null) {
+      _assign(WaypointKind.start, waypoint);
     }
   }
 
@@ -146,6 +162,23 @@ class MapViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Przycisk X w polu: cel czyści całą trasę, start tylko punkt początkowy.
+  void clearField(WaypointKind kind) {
+    if (kind == WaypointKind.destination) {
+      reset();
+      return;
+    }
+    _requestId++;
+    _stopNavigation();
+    _start = null;
+    _routes = const [];
+    _activeRouteId = null;
+    _identicalRoutes = false;
+    _loading = false;
+    startController.clear();
+    notifyListeners();
+  }
+
   // ----------------------------------------------------------------- routing
 
   void selectRoute(String id) {
@@ -180,7 +213,9 @@ class MapViewModel extends ChangeNotifier {
     } on ApiException catch (e) {
       if (_disposed || id != _requestId) return;
       _setLoading(false);
-      _message(e.kind == ApiErrorKind.noRoute ? MapStrings.routeNotFound : MapStrings.connectionLost);
+      _message(
+        e.kind == ApiErrorKind.noRoute ? MapStrings.routeNotFound : MapStrings.connectionLost,
+      );
     }
   }
 
@@ -198,18 +233,28 @@ class MapViewModel extends ChangeNotifier {
     _emit(MoveCamera(point, zoom: AppConfig.userLocationZoom, keepHigherZoom: true));
   }
 
-  /// Ustawia bieżącą lokalizację jako punkt startowy.
-  Future<void> useLocationAsStart() async {
+  /// Cichy odczyt lokalizacji przy starcie; gdy GPS się nie nadaje, odkrywa pole "Skąd".
+  Future<void> initLocation() async {
+    final point = await _locate(quiet: true);
+    if (_disposed) return;
+    if (point == null || !AppConfig.krakowBounds.contains(point)) {
+      _gpsFailed = true;
+      notifyListeners();
+    }
+  }
+
+  /// Po wybraniu celu przyjmuje lokalizację GPS jako start (bez przesuwania kamery:
+  /// po wyznaczeniu trasy kamera sama dopasuje widok).
+  Future<void> _fillStartFromGps() async {
     final point = await _locate();
-    if (point == null || _disposed) return;
-    if (!AppConfig.krakowBounds.contains(point)) {
-      _message(MapStrings.outsideKrakow);
+    if (_disposed || _start != null || _destination == null) return;
+    if (point == null || !AppConfig.krakowBounds.contains(point)) {
+      if (point != null) _message(MapStrings.outsideKrakow);
+      _gpsFailed = true;
+      notifyListeners();
       return;
     }
-    final result = _assign(WaypointKind.start, Waypoint(point, MapStrings.userLocationLabel));
-    if (result == _AssignResult.placed) {
-      _emit(MoveCamera(point, zoom: AppConfig.userLocationZoom));
-    }
+    _assign(WaypointKind.start, Waypoint(point, MapStrings.userLocationLabel));
   }
 
   /// Cel wybrany w "Odkrywaj" ("Nawiguj"): start z lokalizacji użytkownika, jeśli dostępna.
@@ -237,7 +282,7 @@ class MapViewModel extends ChangeNotifier {
       notifyListeners();
       return;
     }
-    final Stream<LatLng> positions;
+    final Stream<GpsFix> positions;
     try {
       positions = await _location.track();
     } on LocationException catch (e) {
@@ -246,30 +291,64 @@ class MapViewModel extends ChangeNotifier {
     }
     if (_disposed) return;
 
+    // Nawigacja zawsze startuje od początku trasy, a nie od surowego GPS
+    // (np. emulator zgłasza pozycję poza Polską, co "teleportowało" mapę).
+    final active = activeRoute;
+    if (active != null) {
+      final first = active.coordinates.first;
+      _userLocation = first;
+      _heading = _initialHeading(active.coordinates);
+      _emit(MoveCamera(first, zoom: AppConfig.navigationZoom));
+      final heading = _heading;
+      if (heading != null) _emit(RotateCamera(heading));
+    }
     _navigating = true;
     notifyListeners();
     _positionSub = positions.listen(
       _onNavigationPosition,
       onError: (_) => _message(MapStrings.gpsLost),
     );
-    final active = activeRoute;
-    if (active != null) {
-      _emit(MoveCamera(active.coordinates.first, zoom: AppConfig.navigationZoom));
-    }
   }
 
-  void _onNavigationPosition(LatLng point) {
-    _userLocation = point;
-    notifyListeners();
-    if (_navigating) {
-      _emit(MoveCamera(point, zoom: AppConfig.navigationZoom, animated: false));
+  /// Kierunek pierwszego odcinka trasy (do punktu oddalonego o co najmniej ~10 m).
+  double? _initialHeading(List<LatLng> coordinates) {
+    const distance = Distance();
+    final origin = coordinates.first;
+    for (final point in coordinates.skip(1)) {
+      if (distance.as(LengthUnit.Meter, origin, point) >= _minHeadingMeters) {
+        return _normalizeBearing(distance.bearing(origin, point));
+      }
     }
+    return null;
+  }
+
+  static double _normalizeBearing(double degrees) => (degrees % 360 + 360) % 360;
+
+  void _onNavigationPosition(GpsFix fix) {
+    if (!_navigating || !AppConfig.polandBounds.contains(fix.point)) return;
+    const distance = Distance();
+    final previous = _userLocation;
+    double? heading = fix.heading;
+    if (heading == null &&
+        previous != null &&
+        distance.as(LengthUnit.Meter, previous, fix.point) > _minMoveMeters) {
+      heading = _normalizeBearing(distance.bearing(previous, fix.point));
+    }
+    _userLocation = fix.point;
+    _heading = heading ?? _heading;
+    notifyListeners();
+    _emit(MoveCamera(fix.point, zoom: AppConfig.navigationZoom, animated: false));
+    final current = _heading;
+    if (current != null) _emit(RotateCamera(current));
   }
 
   void _stopNavigation() {
+    final wasNavigating = _navigating;
     _positionSub?.cancel();
     _positionSub = null;
     _navigating = false;
+    _heading = null;
+    if (wasNavigating) _emit(const RotateCamera(0));
   }
 
   // ---------------------------------------------------------------- pomocnicze
@@ -286,6 +365,7 @@ class MapViewModel extends ChangeNotifier {
       unawaited(_requestRoutes());
       return _AssignResult.routing;
     }
+    if (kind == WaypointKind.destination && !_gpsFailed) unawaited(_fillStartFromGps());
     return _AssignResult.placed;
   }
 
@@ -315,8 +395,11 @@ class MapViewModel extends ChangeNotifier {
   bool _tooClose(LatLng a, LatLng b) =>
       const Distance().as(LengthUnit.Meter, a, b) < AppConfig.minRouteDistanceMeters;
 
-  Future<LatLng?> _locate() async {
-    if (_locating) return null;
+  /// Równoległe wywołania czekają na ten sam odczyt. [quiet] pomija komunikaty o błędach.
+  Future<LatLng?> _locate({bool quiet = false}) =>
+      _pendingLocate ??= _readLocation(quiet).whenComplete(() => _pendingLocate = null);
+
+  Future<LatLng?> _readLocation(bool quiet) async {
     _locating = true;
     notifyListeners();
     try {
@@ -324,7 +407,7 @@ class MapViewModel extends ChangeNotifier {
       if (!_disposed) _userLocation = point;
       return point;
     } on LocationException catch (e) {
-      _message(_locationMessage(e.failure));
+      if (!quiet) _message(_locationMessage(e.failure));
       return null;
     } finally {
       if (!_disposed) {
@@ -335,10 +418,10 @@ class MapViewModel extends ChangeNotifier {
   }
 
   String _locationMessage(LocationFailure failure) => switch (failure) {
-        LocationFailure.serviceDisabled => MapStrings.locationDisabled,
-        LocationFailure.permissionDenied => MapStrings.locationDenied,
-        LocationFailure.unavailable => MapStrings.locationUnavailable,
-      };
+    LocationFailure.serviceDisabled => MapStrings.locationDisabled,
+    LocationFailure.permissionDenied => MapStrings.locationDenied,
+    LocationFailure.unavailable => MapStrings.locationUnavailable,
+  };
 
   /// Gdy użytkownik jest poza Krakowem: wróć do tras, startu albo centrum miasta.
   void _recenterFallback() {

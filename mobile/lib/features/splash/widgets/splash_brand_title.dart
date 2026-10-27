@@ -14,7 +14,12 @@ class SplashBrandTitle extends StatelessWidget {
       child: Text.rich(
         TextSpan(
           text: AppConfig.name,
-          children: [TextSpan(text: '?', style: TextStyle(color: scheme.primary))],
+          children: [
+            TextSpan(
+              text: '?',
+              style: TextStyle(color: scheme.primary),
+            ),
+          ],
         ),
         style: TextStyle(
           color: scheme.onSurface,

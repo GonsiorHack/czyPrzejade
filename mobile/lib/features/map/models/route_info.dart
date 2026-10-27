@@ -44,17 +44,17 @@ class RouteInfo {
   final bool offline;
 
   RouteInfo copyWith({String? id, bool? offline}) => RouteInfo(
-        id: id ?? this.id,
-        name: name,
-        routeType: routeType,
-        type: type,
-        isWheelchairSafe: isWheelchairSafe,
-        distanceMeters: distanceMeters,
-        durationMinutes: durationMinutes,
-        tags: tags,
-        coordinates: coordinates,
-        offline: offline ?? this.offline,
-      );
+    id: id ?? this.id,
+    name: name,
+    routeType: routeType,
+    type: type,
+    isWheelchairSafe: isWheelchairSafe,
+    distanceMeters: distanceMeters,
+    durationMinutes: durationMinutes,
+    tags: tags,
+    coordinates: coordinates,
+    offline: offline ?? this.offline,
+  );
 }
 
 /// Domyślne etykiety tras dostępnej i standardowej.

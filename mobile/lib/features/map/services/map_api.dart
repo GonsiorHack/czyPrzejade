@@ -102,12 +102,14 @@ class MapApi {
   }
 
   Future<dynamic> _requestRoute(String path, LatLng start, LatLng end) {
-    final uri = Uri.parse('${AppConfig.apiBase}$path').replace(queryParameters: {
-      'start_lng': '${start.longitude}',
-      'start_lat': '${start.latitude}',
-      'end_lng': '${end.longitude}',
-      'end_lat': '${end.latitude}',
-    });
+    final uri = Uri.parse('${AppConfig.apiBase}$path').replace(
+      queryParameters: {
+        'start_lng': '${start.longitude}',
+        'start_lat': '${start.latitude}',
+        'end_lng': '${end.longitude}',
+        'end_lat': '${end.latitude}',
+      },
+    );
     return _getJson(uri);
   }
 

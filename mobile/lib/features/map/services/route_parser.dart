@@ -40,7 +40,8 @@ RouteInfo? _toRouteInfo(dynamic feature, int index) {
   final minutes = props['time_minutes'];
   final safe = props['is_wheelchair_safe'];
   final coords = geometry['coordinates'];
-  final valid = routeType is String &&
+  final valid =
+      routeType is String &&
       distance is num &&
       minutes is num &&
       safe is bool &&

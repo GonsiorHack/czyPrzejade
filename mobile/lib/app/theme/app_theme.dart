@@ -30,9 +30,11 @@ abstract final class AppThemeFactory {
 
     final side = BorderSide(color: palette.border, width: highContrast ? 2 : 1);
     final inputBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(Radii.md),
       borderSide: side,
     );
+    const minTarget = Size(TouchTargets.min, TouchTargets.min);
+    final buttonShape = RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.sm));
 
     return ThemeData(
       useMaterial3: true,
@@ -50,25 +52,20 @@ abstract final class AppThemeFactory {
         color: palette.card,
         elevation: 0,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(Radii.md),
-          side: side,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.md), side: side),
       ),
-      navigationBarTheme: NavigationBarThemeData(
+      bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: palette.card,
-        indicatorColor: palette.accent.withValues(alpha: 0.2),
-        labelTextStyle: WidgetStatePropertyAll(
-          TextStyle(color: palette.text, fontSize: 12, fontWeight: FontWeight.w600),
-        ),
-        iconTheme: WidgetStateProperty.resolveWith(
-          (states) => IconThemeData(
-            color: states.contains(WidgetState.selected) ? palette.accent : palette.textSecondary,
-          ),
+        surfaceTintColor: Colors.transparent,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(Radii.lg)),
         ),
       ),
+      iconButtonTheme: IconButtonThemeData(style: IconButton.styleFrom(minimumSize: minTarget)),
       chipTheme: ChipThemeData(
         side: side,
+        shape: const StadiumBorder(),
+        padding: const EdgeInsets.symmetric(horizontal: Spacing.sm, vertical: Spacing.sm),
         backgroundColor: palette.card,
         selectedColor: palette.accent,
         labelStyle: TextStyle(color: palette.text),
@@ -79,9 +76,20 @@ abstract final class AppThemeFactory {
         style: FilledButton.styleFrom(
           backgroundColor: palette.accent,
           foregroundColor: palette.onAccent,
-          minimumSize: const Size(TouchTargets.min, TouchTargets.min),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(Radii.sm)),
+          minimumSize: minTarget,
+          shape: buttonShape,
         ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: palette.text,
+          side: side,
+          minimumSize: minTarget,
+          shape: buttonShape,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(minimumSize: minTarget, shape: buttonShape),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,

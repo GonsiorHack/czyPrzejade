@@ -19,16 +19,18 @@ class AppConfig {
   static const apiStandardRoute = '/api/route-standard';
   static const apiGeocode = '/api/geocode';
 
-  static const tileUrl = 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
-  static const tileSubdomains = ['a', 'b', 'c'];
+  /// Kafelki OSM. CARTO Voyager wymaga obecnie klucza API (zwraca znak wodny), więc nie jest używany.
+  static const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+  static const tileSubdomains = <String>[];
   static const userAgentPackage = 'pl.czyprzejade.czy_przejade';
-  static const mapAttribution = '© OpenStreetMap contributors · HOT · OSM France';
+  static const mapAttribution = '© OpenStreetMap contributors';
 
   static const krakowCenter = LatLng(50.0614, 19.9372);
-  static final krakowBounds = GeoBounds(
-    const LatLng(49.967, 19.792),
-    const LatLng(50.126, 20.217),
-  );
+
+  /// Przybliżony prostokąt Polski: pozycje GPS spoza niego są ignorowane podczas nawigacji.
+  static final polandBounds = GeoBounds(const LatLng(49.0, 14.1), const LatLng(54.9, 24.2));
+
+  static final krakowBounds = GeoBounds(const LatLng(49.967, 19.792), const LatLng(50.126, 20.217));
 
   static const defaultZoom = 16.0;
   static const userLocationZoom = 17.0;

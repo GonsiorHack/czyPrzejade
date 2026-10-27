@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../app/design_tokens.dart';
 import '../map_strings.dart';
+import 'map_control_button.dart';
 import 'report_dialogs.dart';
 
 const _menuWidth = 256.0;
@@ -51,19 +52,16 @@ class _ReportObstacleButtonState extends State<ReportObstacleButton> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         if (_menuOpen) _Menu(onReport: _report),
-        FloatingActionButton(
-          heroTag: 'report-obstacle',
+        MapControlButton(
+          icon: Icons.photo_camera_outlined,
           tooltip: MapStrings.reportTooltip,
-          backgroundColor: scheme.primary,
-          foregroundColor: scheme.onPrimary,
+          emphasized: true,
           onPressed: _busy ? null : () => setState(() => _menuOpen = !_menuOpen),
-          child: const Icon(Icons.photo_camera_outlined),
         ),
       ],
     );

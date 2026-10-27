@@ -83,7 +83,8 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
     if (value.position > Duration.zero && !_videoProgressed) {
       setState(() => _videoProgressed = true);
     }
-    final ended = value.duration > Duration.zero &&
+    final ended =
+        value.duration > Duration.zero &&
         value.position >= value.duration - SplashConstants.endMargin;
     if (ended && _videoProgressed) _finish();
   }
@@ -140,7 +141,8 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
   @override
   Widget build(BuildContext context) {
     final controller = _controller;
-    final showVideo = controller != null && controller.value.isInitialized && _phase != _Phase.failed;
+    final showVideo =
+        controller != null && controller.value.isInitialized && _phase != _Phase.failed;
 
     return Material(
       color: Theme.of(context).colorScheme.surface,
