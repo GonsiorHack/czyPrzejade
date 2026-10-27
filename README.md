@@ -93,6 +93,8 @@ Otwarcie podchodzimy do obecnych ograniczeń prototypu i realizujemy plan ich el
 
 * **Kierunek długofalowy**: Przygotowujemy wdrożenie **własnego, dedykowanego serwera klastrowego do routingu (Self-hosted Valhalla / OSRM)** z dedykowanymi profilami przejezdności. Zapewni to niezależność od zewnętrznych limitów, czas odpowiedzi poniżej 50 ms oraz bezproblemową skalowalność na dowolny region świata.
 
+* **Model obliczeniowy w C++**: W przyszłości model liczenia (scoring przejezdności i routing) będzie wspierany przez wydajną implementację w **C++**, co skróci czas obliczeń i umożliwi uruchamianie ich zarówno na serwerze, jak i na urządzeniu.
+
 ---
 
 ## Stos Technologiczny
@@ -103,6 +105,7 @@ Otwarcie podchodzimy do obecnych ograniczeń prototypu i realizujemy plan ich el
 | Backend (`backend/`) | Python, FastAPI, Uvicorn, OpenRouteService (routing i geokodowanie) |
 | Uczenie maszynowe (`machinelearning/`) | Python, PyTorch, MobileNetV2 (klasyfikacja nawierzchni) |
 | Dane | OpenStreetMap, GeoJSON |
+| Planowane | C++ (wydajny model liczenia), self-hosted Valhalla / OSRM |
 | Narzędzia | Android Emulator + scrcpy (`dev-android.sh`), flutter analyze |
 
 ### Szybki start
@@ -185,7 +188,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
 ## 👥 Poznaj Nasz [Team](https://github.com/GonsiorHack)
 
 <p align="right">
-  <img src="https://skillicons.dev/icons?i=dart,flutter,figma" height="40" style="vertical-align: middle;" alt="Dart, Flutter, Figma" />
+  <img src="https://skillicons.dev/icons?i=dart,flutter,cpp" height="40" style="vertical-align: middle;" alt="Dart, Flutter, C++" />
   &nbsp;&nbsp;
   <a href="https://github.com/sh3kda" target="_blank"><strong>@sh3kda</strong></a>
   &nbsp;&nbsp;
