@@ -3,9 +3,7 @@
 > Skalowalna platforma miejskiej mikromobilności niwelująca bariery przestrzenne dla osób z ograniczoną mobilnością: użytkowników wózków manualnych i elektrycznych, seniorów oraz opiekunów z wózkami dziecięcymi. System łączy analizę wizyjną Computer Vision z dynamicznym routingiem omijającym przeszkody architektoniczne.
 
 <p align="center">
-  <a href="https://hy-2026-woad.vercel.app/" target="_blank">
-    <img src="https://vercel.com/button" alt="View Demo on Vercel" />
-  </a>
+  Aplikacja mobilna (Flutter) na iOS i Android - instrukcja uruchomienia w <a href="mobile/README.md">mobile/README.md</a>.
 </p>
 <p align="center">
   <img src="https://img.shields.io/badge/Status-Seeking_Partners_and_Investors-1a1b26?style=for-the-badge&logoColor=white&labelColor=9ece6a" alt="Status" />
@@ -13,7 +11,7 @@
 
 <p align="center">
   <a href="https://skillicons.dev" target="_blank">
-    <img src="https://skillicons.dev/icons?i=py,fastapi,pytorch,svelte,ts" alt="Tech Stack Icons" />
+    <img src="https://skillicons.dev/icons?i=py,fastapi,pytorch,flutter,dart" alt="Tech Stack Icons" />
   </a>
 </p>
 
@@ -95,13 +93,42 @@ Otwarcie podchodzimy do obecnych ograniczeń prototypu i realizujemy plan ich el
 
 * **Kierunek długofalowy**: Przygotowujemy wdrożenie **własnego, dedykowanego serwera klastrowego do routingu (Self-hosted Valhalla / OSRM)** z dedykowanymi profilami przejezdności. Zapewni to niezależność od zewnętrznych limitów, czas odpowiedzi poniżej 50 ms oraz bezproblemową skalowalność na dowolny region świata.
 
+* **Model obliczeniowy w C++**: W przyszłości model liczenia (scoring przejezdności i routing) będzie wspierany przez wydajną implementację w **C++**, co skróci czas obliczeń i umożliwi uruchamianie ich zarówno na serwerze, jak i na urządzeniu.
+
+---
+
+## Stos Technologiczny
+
+| Warstwa | Technologie |
+|---|---|
+| Aplikacja mobilna (`mobile/`) | Flutter 3.x / Dart 3.x (iOS, Android), `provider` (stan), `flutter_map` + `latlong2` (mapa OSM), `geolocator`, `http`, `image_picker`, `video_player`, `flutter_svg`, `shared_preferences` |
+| Backend (`backend/`) | Python, FastAPI, Uvicorn, OpenRouteService (routing i geokodowanie) |
+| Uczenie maszynowe (`machinelearning/`) | Python, PyTorch, MobileNetV2 (klasyfikacja nawierzchni) |
+| Dane | OpenStreetMap, GeoJSON |
+| Planowane | C++ (wydajny model liczenia), self-hosted Valhalla / OSRM |
+| Narzędzia | Android Emulator + scrcpy (`dev-android.sh`), flutter analyze |
+
+### Szybki start
+
+```bash
+# backend
+cd backend && python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --host 0.0.0.0 --port 8000
+
+# aplikacja (emulator Androida)
+cd mobile && flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8000
+```
+
+Dodatkowo `./dev-android.sh` uruchamia backend, emulator i aplikację jedną komendą (`./dev-android.sh stop` zatrzymuje wszystko). Szczegóły: [mobile/README.md](mobile/README.md), [backend/README_BACKEND.md](backend/README_BACKEND.md).
+
 ---
 
 ## Architektura Systemu
 
 ```
 ┌────────────────────────────────────────────────────────┐
-│             Klient PWA (Svelte + Leaflet)              │
+│         Klient mobilny (Flutter + flutter_map)         │
 │        Interfejs mobilny, porównanie tras, UX          │
 └───────────────────────────┬────────────────────────────┘
                             │ REST / GeoJSON
@@ -161,7 +188,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
 ## 👥 Poznaj Nasz [Team](https://github.com/GonsiorHack)
 
 <p align="right">
-  <img src="https://skillicons.dev/icons?i=ts,svelte,python" height="40" style="vertical-align: middle;" alt="TypeScript, Svelte, AI models" />
+  <img src="https://skillicons.dev/icons?i=flutter,cpp,linux,git" height="40" style="vertical-align: middle;" alt="Dart, C++, Linux, Git" />
   &nbsp;&nbsp;
   <a href="https://github.com/sh3kda" target="_blank"><strong>@sh3kda</strong></a>
   &nbsp;&nbsp;
@@ -169,7 +196,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
     <img src="https://github.com/sh3kda.png" width="56" height="56" style="border-radius: 50%; vertical-align: middle;" alt="sh3kda" />
   </a>
   <br />
- <em>Fullstack Development • LLM Integration • Deployment </em>↲&nbsp;&nbsp;
+  <em>Software Engineering • Flutter & Mobile Systems</em>&nbsp;&nbsp;
 </p>
 
 ---

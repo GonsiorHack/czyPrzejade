@@ -6,11 +6,8 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 import requests
-from chat.router import install_chat
 
 app = FastAPI(title="WheelRoute - Krakow Accessibility API")
-
-install_chat(app)
 
 ORS_KEY_FILE = Path(__file__).parent / ".env"
 ORS_API_KEY = ORS_KEY_FILE.read_text(encoding="utf-8").strip() if ORS_KEY_FILE.exists() else ""
