@@ -1,19 +1,13 @@
-# czyPrzejade - Miasta Bez Barier
+# czyPrzejade — Miasta Bez Barier
 
-> Skalowalna platforma miejskiej mikromobilności niwelująca bariery przestrzenne dla osób z ograniczoną mobilnością: użytkowników wózków manualnych i elektrycznych, seniorów oraz opiekunów z wózkami dziecięcymi. System łączy analizę wizyjną Computer Vision z dynamicznym routingiem omijającym przeszkody architektoniczne.
+> Skalowalna platforma miejskiej mikromobilności niwelująca bariery przestrzenne dla osób z ograniczoną mobilnością: użytkowników wózków manualnych i elektrycznych, seniorów oraz opiekunów z wózkami dziecięcymi.
 
-<p align="center">
-  Aplikacja mobilna (Flutter) na iOS i Android - instrukcja uruchomienia w <a href="mobile/README.md">mobile/README.md</a>.
-</p>
-<p align="center">
-  <img src="https://img.shields.io/badge/Status-Seeking_Partners_and_Investors-1a1b26?style=for-the-badge&logoColor=white&labelColor=9ece6a" alt="Status" />
-</p>
-
-<p align="center">
-  <a href="https://skillicons.dev" target="_blank">
-    <img src="https://skillicons.dev/icons?i=py,fastapi,pytorch,flutter,dart" alt="Tech Stack Icons" />
-  </a>
-</p>
+| Moduł | Szczegóły |
+|---|---|
+| **Aplikacja mobilna** | Flutter (iOS & Android) — konfiguracja w [`mobile/README.md`](mobile/README.md) |
+| **Backend & Routing** | Valhalla + FastAPI (Python) + OpenRouteService / GIS |
+| **Model AI** | MobileNetV2 (klasyfikacja nawierzchni i podłoża) |
+| **Faza projektu** | Wczesny startup / rozwój w kierunku wdrożenia |
 
 ---
 
@@ -188,7 +182,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
 ## 👥 Poznaj Nasz [Team](https://github.com/GonsiorHack)
 
 <p align="right">
-  <img src="https://skillicons.dev/icons?i=flutter,cpp,linux,git" height="40" style="vertical-align: middle;" alt="Dart, C++, Linux, Git" />
+  <img src="https://skillicons.dev/icons?i=git,flutter,svelte,ts,py" height="40" style="vertical-align: middle;" alt="Ggit,flutter,svelte,ts,py" />
   &nbsp;&nbsp;
   <a href="https://github.com/sh3kda" target="_blank"><strong>@sh3kda</strong></a>
   &nbsp;&nbsp;
@@ -196,13 +190,13 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
     <img src="https://github.com/sh3kda.png" width="56" height="56" style="border-radius: 50%; vertical-align: middle;" alt="sh3kda" />
   </a>
   <br />
-  <em>Software Engineering • Flutter & Mobile Systems</em>&nbsp;&nbsp;
+  <em>Architecture • Team Lead & Deployment • Mobile • Fullstack</em>&nbsp;&nbsp;
 </p>
 
 ---
 
 <p align="right">
-  <img src="https://skillicons.dev/icons?i=py,pytorch,fastapi" height="40" style="vertical-align: middle;" alt="Python, PyTorch, FastAPI" />
+  <img src="https://skillicons.dev/icons?i=java,spring,py,pytorch,fastapi" height="40" style="vertical-align: middle;" alt="Java, Spring, Python, PyTorch, FastAPI" />
   &nbsp;&nbsp;
   <a href="https://github.com/GaskaPiotr" target="_blank"><strong>@GaskaPiotr</strong></a>
   &nbsp;&nbsp;
@@ -210,13 +204,13 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
     <img src="https://github.com/GaskaPiotr.png" width="56" height="56" style="border-radius: 50%; vertical-align: middle;" alt="GaskaPiotr" />
   </a>
   <br />
-  <em>Geospatial AI • Backend Engineering • Routing Algorithms</em>↲&nbsp;&nbsp;
+  <em>Backend Engineering • Geospatial AI • Routing Algorithms</em>&nbsp;&nbsp;
 </p>
 
 ---
 
 <p align="right">
-  <img src="https://skillicons.dev/icons?i=py,postman" height="40" style="vertical-align: middle;" alt="Python, Postman, Git" />
+  <img src="https://skillicons.dev/icons?i=py,notion" height="40" style="vertical-align: middle;" alt="Python, Notion" />
   &nbsp;&nbsp;
   <a href="https://github.com/Antoine052" target="_blank"><strong>@Antoine052</strong></a>
   &nbsp;&nbsp;
@@ -224,5 +218,5 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
     <img src="https://github.com/Antoine052.png" width="56" height="56" style="border-radius: 50%; vertical-align: middle;" alt="Antoine052" />
   </a>
   <br />
-  <em>Spatial Data Science • GIS Engineering • Data Sourcing</em> ↲&nbsp;&nbsp;
+  <em>GIS & OpenStreetMap Research • Domain & Source Research • Data Sourcing & Verification</em>&nbsp;&nbsp;
 </p>
