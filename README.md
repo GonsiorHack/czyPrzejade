@@ -188,7 +188,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
 ## 👥 Poznaj Nasz [Team](https://github.com/GonsiorHack)
 
 <p align="right">
-  <img src="https://skillicons.dev/icons?i=cpp,dart,flutter" height="40" style="vertical-align: middle;" alt="Dart, Flutter, C++" />
+  <img src="https://skillicons.dev/icons?i=flutter,cpp,linux,git" height="40" style="vertical-align: middle;" alt="Dart, C++, Linux, Git" />
   &nbsp;&nbsp;
   <a href="https://github.com/sh3kda" target="_blank"><strong>@sh3kda</strong></a>
   &nbsp;&nbsp;
@@ -196,7 +196,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
     <img src="https://github.com/sh3kda.png" width="56" height="56" style="border-radius: 50%; vertical-align: middle;" alt="sh3kda" />
   </a>
   <br />
-  <em>Mobile (Flutter) • Software Architecture • Deployment</em>↲&nbsp;&nbsp;
+  <em>Software Engineering • Flutter & Mobile Systems</em>&nbsp;&nbsp;
 </p>
 
 ---
