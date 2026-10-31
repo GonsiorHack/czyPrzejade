@@ -182,7 +182,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
 ## 👥 Poznaj Nasz [Team](https://github.com/GonsiorHack)
 
 <p align="right">
-  <img src="https://skillicons.dev/icons?i=git,flutter,svelte,ts,py" height="40" style="vertical-align: middle;" alt="Ggit,flutter,svelte,ts,py" />
+  <img src="https://skillicons.dev/icons?i=py,git,flutter,svelte" height="40" style="vertical-align: middle;"/>
   &nbsp;&nbsp;
   <a href="https://github.com/sh3kda" target="_blank"><strong>@sh3kda</strong></a>
   &nbsp;&nbsp;
@@ -190,7 +190,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
     <img src="https://github.com/sh3kda.png" width="56" height="56" style="border-radius: 50%; vertical-align: middle;" alt="sh3kda" />
   </a>
   <br />
-  <em>Architecture • Team Lead & Deployment • Mobile • Fullstack</em>&nbsp;&nbsp;
+  <em>Architecture • Team Lead & Deployment • Fullstack</em>&nbsp;&nbsp;
 </p>
 
 ---
