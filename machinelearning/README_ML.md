@@ -27,6 +27,8 @@ Przed uruchomieniem jakichkolwiek skryptów upewnij się, że struktura folderó
 
 > **Ważne:** Każdy podfolder w `data/map_data/` musi zawierać co najmniej **jedno zdjęcie** (`.png`, `.jpg`, `.jpeg`) oraz **jeden plik GeoJSON** z obrysem danego obszaru.
 
+Pliki GeoJSON muszą zawierać niepustą kolekcję `FeatureCollection`. Jeśli strefa zawiera kilka plików, skrypt wybiera pierwszy alfabetycznie (preferując `.geojson` przed `.json`) i wypisuje wybrane nazwy. Katalogi `data/` i `analyzed_data/` oraz checkpoint są rozwiązywane względem katalogu `machinelearning/`, niezależnie od miejsca uruchomienia.
+
 ---
 
 ## Wymagania i instalacja
@@ -48,7 +50,10 @@ Proces składa się z dwóch niezależnych kroków, które **muszą** zostać wy
 python train_model.py
 ```
 * **Co robi:** Trenuje sieć MobileNetV2 metodą Transfer Learningu oraz Fine-Tuningu ostatniego bloku splotowego. Wykorzystuje zaawansowaną augmentację (odporność na cienie, obroty pod kątem prostym, brak zniekształceń proporcji kadru).
-* **Zapis najlepszego stanu:** Skrypt automatycznie zapisuje wagi z epoki o najwyższej dokładności walidacyjnej (`Best Checkpoint`) do pliku **`surface_model.pth`**.
+* **Zapis najlepszego stanu:** Skrypt automatycznie zapisuje wagi z epoki o najniższej stracie walidacyjnej (`val_loss`, `Best Checkpoint`) do pliku **`surface_model.pth`**. W każdej epoce logowane są średnia strata (`train_loss`, `val_loss`) oraz dokładność.
+* **Zamrożone warstwy:** Warstwy BatchNorm w zamrożonej części sieci pozostają w trybie `eval()`, dzięki czemu zachowują statystyki z ImageNet.
+* **Małe zbiory:** Każda klasa ma co najmniej jedno zdjęcie w treningu. Zbiór treningowy musi wystarczyć na pełny batch, a walidacyjny nie może być pusty. Klasy muszą mieć wpisy w `CATEGORY_SCORES`.
+* **Przygotowanie zdjęć:** Walidacja i analiza korzystają z tego samego centralnego kadru kwadratowego oraz normalizacji, bez rozciągania proporcji.
 * **Wynik:** Plik `surface_model.pth`.
 
 ### Krok 2: Analiza stref miejskich i generowanie poligonów
@@ -68,5 +73,7 @@ python analyze_map_data.py
 ---
 
 ## Wykorzystanie danych przez backend
+
+Testy regresyjne modułu można uruchomić z katalogu głównego: `python -m unittest discover -s machinelearning -p 'test_ml.py'`.
 
 Po zakończeniu Kroku 2 wygenerowany pliki w folderze **`analyzed_data/`** pozwalają wykorzystać przeanalizowane dane do wyznaczania trasy która będzie omijać nieprzejezdne bariery.
