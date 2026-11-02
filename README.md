@@ -182,7 +182,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
 ## 👥 Poznaj Nasz [Team](https://github.com/GonsiorHack)
 
 <p align="right">
-  <img src="https://skillicons.dev/icons?i=py,git,flutter,svelte" height="40" style="vertical-align: middle;"/>
+  <img src="https://skillicons.dev/icons?i=py,flutter,svelte" height="40" style="vertical-align: middle;"/>
   &nbsp;&nbsp;
   <a href="https://github.com/sh3kda" target="_blank"><strong>@sh3kda</strong></a>
   &nbsp;&nbsp;
@@ -196,7 +196,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
 ---
 
 <p align="right">
-  <img src="https://skillicons.dev/icons?i=java,spring,py,pytorch,fastapi" height="40" style="vertical-align: middle;" alt="Java, Spring, Python, PyTorch, FastAPI" />
+  <img src="https://skillicons.dev/icons?i=java,spring" height="40" style="vertical-align: middle;" alt="Java, Spring, Python, PyTorch, FastAPI" />
   &nbsp;&nbsp;
   <a href="https://github.com/GaskaPiotr" target="_blank"><strong>@GaskaPiotr</strong></a>
   &nbsp;&nbsp;
@@ -210,7 +210,6 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
 ---
 
 <p align="right">
-  <img src="https://skillicons.dev/icons?i=py,notion" height="40" style="vertical-align: middle;" alt="Python, Notion" />
   &nbsp;&nbsp;
   <a href="https://github.com/Antoine052" target="_blank"><strong>@Antoine052</strong></a>
   &nbsp;&nbsp;
