@@ -190,7 +190,7 @@ Rozwijamy projekt w modelu otwartego dialogu ze środowiskiem akademickim, dewel
     <img src="https://github.com/sh3kda.png" width="56" height="56" style="border-radius: 50%; vertical-align: middle;" alt="sh3kda" />
   </a>
   <br />
-  <em>Architecture • Team Lead & Deployment • Fullstack</em>&nbsp;&nbsp;
+  <em> Team Lead & Deployment • Fullstack dev • AI integration </em>&nbsp;&nbsp;
 </p>
 
 ---
